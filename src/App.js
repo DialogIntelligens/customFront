@@ -21,7 +21,7 @@ const App = () => {
   // Function to make the API call
   async function query(data) {
     const response = await fetch(
-      "https://flowise-udvikling.onrender.com/api/v1/prediction/b1b21116-a068-471a-922b-e2d4474e125f",
+      "https://flowise-udvikling.onrender.com/api/v1/prediction/4817bf28-e8ca-4b4d-92f9-0cab9107cfb9",
       {
           method: "POST",
           headers: {

@@ -6,16 +6,25 @@ const App = () => {
   const [question2, setQuestion2] = useState('');
   const [question3, setQuestion3] = useState('');
   const [output, setOutput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   // Function to send the question to the API
   const sendQuestion = async () => {
+    setOutput('Vent venligst, imens vores kunstige intelligens genererer et nyt projekt'); // Show waiting message
+    setIsLoading(true); // Start loading indicator
+    
     try {
-      const response = await query({ question: "Hvor skal luftledningerne gå imellem? "+question +". Hvad skal i bygge?"+question2+". Hvor høj spænding skal det være?"+question3 });
-      setOutput(response.text);
+      const response = await query({ 
+        question: `Hvor skal luftledningerne gå imellem? ${question}. Hvilke type ledning er det? ${question2}. Hvor høj spænding skal det være? ${question3}.`
+      });
+      // Use the actual property from your response here
+      setOutput(response.text); // Set the new output
     } catch (error) {
       console.error('Error fetching response:', error);
-      setOutput('Failed to get response from the API.');
+      setOutput('Der opstod en fejl under genereringen af projektet.'); // Set error message
     }
+  
+    setIsLoading(false); // Stop loading indicator
   };
 
   // Function to make the API call

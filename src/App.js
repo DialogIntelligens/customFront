@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
 import jsPDF from 'jspdf';
+import React, { useState, useEffect } from 'react';
+import socketIOClient from 'socket.io-client';
+
+const SOCKET_SERVER_URL = "https://flowise-udvikling.onrender.com/";
 
 const App = () => {
   const [question, setQuestion] = useState('');
@@ -7,24 +10,75 @@ const App = () => {
   const [question3, setQuestion3] = useState('');
   const [output, setOutput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [socketIOClientId, setSocketIOClientId] = useState('');
 
-  // Function to send the question to the API
+  useEffect(() => {
+    // Initialize socket connection inside useEffect
+    const socket = socketIOClient(SOCKET_SERVER_URL);
+
+    // Event handlers
+    socket.on('connect', () => {
+      setSocketIOClientId(socket.id);
+    });
+
+    socket.on('token', (token) => {
+      setOutput((prevOutput) => prevOutput + token);
+    });
+
+    socket.on('start', () => {
+      setOutput('');
+      setIsLoading(true);
+    });
+
+    socket.on('end', () => {
+      setIsLoading(false);
+      setOutput(prevOutput => prevOutput + "\nStream complete.");
+    });
+
+    // Clean up on component unmount
+    return () => {
+      socket.off('connect');
+      socket.off('token');
+      socket.off('start');
+      socket.off('end');
+      socket.disconnect();
+    };
+  }, []);
+
   const sendQuestion = async () => {
-    setOutput('Vent venligst, imens vores kunstige intelligens genererer et nyt projekt'); // Show waiting message
-    setIsLoading(true); // Start loading indicator
+    setIsLoading(true);
+    // Don't clear the output if you want to keep the previous tokens
+    // setOutput('');
+    
+    const data = {
+      question: `Hvor skal luftledningerne gå imellem? ${question}. Hvilke type ledning er det? ${question2}. Hvor høj spænding skal det være? ${question3}.`,
+      socketIOClientId,
+    };
     
     try {
-      const response = await query({ 
-        question: `Hvor skal luftledningerne gå imellem? ${question}. Hvilke type ledning er det? ${question2}. Hvor høj spænding skal det være? ${question3}.`
+      const response = await fetch("https://flowise-udvikling.onrender.com/api/v1/prediction/4817bf28-e8ca-4b4d-92f9-0cab9107cfb9", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
       });
-      // Use the actual property from your response here
-      setOutput(response.text); // Set the new output
+    
+      if (response.ok) {
+        const result = await response.json();
+        console.log(result);
+        // Only set the waiting message if you are not expecting tokens from the socket
+        // Otherwise, comment this line out
+        // setOutput('Response received, waiting for stream...');
+      } else {
+        setOutput(`Error: ${response.status}`);
+      }
     } catch (error) {
-      console.error('Error fetching response:', error);
-      setOutput('Der opstod en fejl under genereringen af projektet.'); // Set error message
+      console.error('Error during fetch:', error);
+      setOutput('An error occurred while sending the question.');
     }
-  
-    setIsLoading(false); // Stop loading indicator
+    
+    setIsLoading(false);
   };
 
   // Function to make the API call
@@ -93,9 +147,9 @@ const App = () => {
       <div style={{ marginTop: '20px' }}>
         <h3>Baggrund:</h3>
         <textarea
-          value={output}
-          readOnly
-          style={{ width: '100%', height: '100px', padding: '8px' }}
+         value={output}
+         readOnly
+        style={{ width: '100%', height: '100px', padding: '8px' }}
         />
       </div>
       <button onClick={exportPDF} style={{ padding: '8px 16px', marginTop: '10px' }}>

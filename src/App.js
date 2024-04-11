@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import parse from 'html-react-parser';
 import socketIOClient from 'socket.io-client';
 import styled from 'styled-components';
 import DIlogo from './DIlogo.png';
@@ -419,14 +420,16 @@ const App = () => {
           </Header>
           {conversation.map((entry, index) => {
             const formattedText = entry.text
-            .split("- ")
-            .join("\u2022 "); //"\u2022" is a bullet point
+  // Convert line breaks followed by "- " to bullet points
+  .replace(/\n- /g, "\n\u2022 ")
+  // Convert text surrounded by "**" to bold
+  .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
   
             return (
               <MessageContainer key={index} $isUser={entry.isUser}>
                {!entry.isUser && <MessageLogo src={headerLogoG||DIlogo} alt="AI Logo" />}
               <Message $isUser={entry.isUser} themeColor={themeColor}>
-                {formattedText}
+              <div>{parse(formattedText)}</div>
               </Message>
               </MessageContainer>
             );

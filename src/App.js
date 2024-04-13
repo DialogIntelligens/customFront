@@ -122,13 +122,15 @@ const RestartButton = styled.img`
 `;
 
 const EnlargeButton = styled.img`
-  cursor: pointer;
-  width: 1.33em;
-  height: 1.33em;
-  margin-left: 0.3em;
-  &:hover {
-    opacity: 0.7;
-  }
+position: absolute;
+top: 1em; 
+right: 4.2em; // Adjust this so it doesn't overlap with the CloseButton
+cursor: pointer;
+width: 1.33em; // Set an appropriate size for the image
+height: 1.33em; // Maintain the aspect ratio
+&:hover {
+  opacity: 0.7;
+}
 `;
 
 const Header = styled.div`

@@ -6,6 +6,9 @@ import DIlogo from './DIlogo.png';
 import titleLogo from './titleLogo.png';
 import restartIcon from './restart.png';
 import sendIcon from './sendButton.png';
+import enlargeIcon from './enlargeIcon.png';
+import shrinkIcon from './shrinkIcon.png';
+import sendIcon from './sendButton.png';
 
 const SOCKET_SERVER_URL = "https://flowise-udvikling.onrender.com";
 const placeholderAPI = "https://flowise-udvikling.onrender.com/api/v1/prediction/a3e86073-8eda-401d-90d1-7127fb707f99";
@@ -114,6 +117,16 @@ const RestartButton = styled.img`
   cursor: pointer;
   width: 1.33em; // Set an appropriate size for the image
   height: 1.33em; // Maintain the aspect ratio
+  &:hover {
+    opacity: 0.7;
+  }
+`;
+
+const EnlargeButton = styled.img`
+  cursor: pointer;
+  width: 1.33em;
+  height: 1.33em;
+  margin-left: 0.3em;
   &:hover {
     opacity: 0.7;
   }
@@ -244,6 +257,7 @@ const App = () => {
   const [message, setMessage] = useState('');
   const [socketIOClientId, setSocketIOClientId] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isEnlarged, setIsEnlarged] = useState(false);
 
   const socket = useRef(null);
 
@@ -339,6 +353,12 @@ const App = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const toggleSize = () => {
+    const action = isEnlarged ? 'minimizeChat' : 'enlargeChat';
+    setIsEnlarged(!isEnlarged);
+    window.parent.postMessage({ action: action }, pagePath); // Ensure the domain is correct for security
+  };
+
   const resetChat = () => {
     // Optionally: Disconnect existing socket connection
     socket.current.disconnect();
@@ -411,6 +431,11 @@ const App = () => {
             onClick={resetChat}
           />
           <CloseButton onClick={closeChat}>×</CloseButton>
+          <EnlargeButton 
+            src={isEnlarged ? shrinkIcon : enlargeIcon}
+            alt="Toggle Size"
+            onClick={toggleSize}
+          />
         </TitleBar>
         <div style={{ flexGrow: 1, overflow: 'auto' }}>
           <Header>
@@ -420,10 +445,10 @@ const App = () => {
           </Header>
           {conversation.map((entry, index) => {
             const formattedText = entry.text
-  // Convert line breaks followed by "- " to bullet points
-  .replace(/\n- /g, "\n\u2022 ")
-  // Convert text surrounded by "**" to bold
-  .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+               // Convert line breaks followed by "- " to bullet points
+              .replace(/\n- /g, "\n\u2022 ")
+              // Convert text surrounded by "**" to bold
+              .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
   
             return (
               <MessageContainer key={index} $isUser={entry.isUser}>

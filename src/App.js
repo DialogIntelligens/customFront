@@ -8,7 +8,6 @@ import restartIcon from './restart.png';
 import sendIcon from './sendButton.png';
 import enlargeIcon from './enlargeIcon.png';
 import shrinkIcon from './shrinkIcon.png';
-import sendIcon from './sendButton.png';
 
 const SOCKET_SERVER_URL = "https://flowise-udvikling.onrender.com";
 const placeholderAPI = "https://flowise-udvikling.onrender.com/api/v1/prediction/a3e86073-8eda-401d-90d1-7127fb707f99";

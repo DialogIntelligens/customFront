@@ -355,9 +355,8 @@ const App = () => {
   };
 
   const toggleSize = () => {
-    const action = isEnlarged ? 'minimizeChat' : 'enlargeChat';
     setIsEnlarged(!isEnlarged);
-    window.parent.postMessage({ action: action }, pagePath); // Ensure the domain is correct for security
+    window.parent.postMessage({ action: 'toggleSize' }, pagePath); // Ensure the domain is correct for security
   };
 
   const resetChat = () => {

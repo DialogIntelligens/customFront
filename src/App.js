@@ -231,7 +231,7 @@ const ChatInput = styled.input`
   border-radius: 0.64em; /* Rounded corners */
   margin: 0.64em; /* Margin from the edges of the ChatWindow */
   margin-bottom: 0.5em;
-  width: calc(100% - 1.3em); /* Full width inside the ChatWindow with margin */
+  width: calc(100% - 1.3em-1vh); /* Full width inside the ChatWindow with margin */
   box-sizing: border-box; /* Border and padding should be included in the width and height */
   outline: 0.064em solid #A9A9A9; /* Gray outline */
   outline-offset: 0.13em; /* Distance between outline and border */

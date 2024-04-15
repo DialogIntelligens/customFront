@@ -286,9 +286,6 @@ const App = () => {
         setHeaderTitleG(event.data.headerTitleG);
         setHeaderSubtitleG(event.data.headerSubtitleG);
         setTitleG(event.data.titleG);
-        if(SOCKET_SERVER_URL != null){
-          placeholderSOCKET_SERVER_URL = SOCKET_SERVER_URL;
-        }
       }
     };
   
@@ -303,7 +300,7 @@ const App = () => {
 
   useEffect(() => {
 
-    socket.current = socketIOClient(placeholderSOCKET_SERVER_URL);
+    socket.current = socketIOClient(SOCKET_SERVER_URL);
   
     socket.current.on('connect', () => {
       setSocketIOClientId(socket.current.id);

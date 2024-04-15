@@ -300,14 +300,11 @@ const App = () => {
 
   useEffect(() => {
 
-  // Directly using the URL here for testing purposes
-  const socketUrl = "https://flowise-app-gr.westeurope.azurecontainer.io/";
-  socket.current = socketIOClient(socketUrl);
-
-  socket.current.on('connect', () => {
-    console.log("Connected to server");
-    setSocketIOClientId(socket.current.id);
-  });
+    socket.current = socketIOClient(SOCKET_SERVER_URL||placeholderSOCKET_SERVER_URL);
+  
+    socket.current.on('connect', () => {
+      setSocketIOClientId(socket.current.id);
+    });
   
     socket.current.on('start', () => {
       setConversation(prevConv => [...prevConv, { text: '', isUser: false }]);

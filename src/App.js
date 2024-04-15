@@ -9,7 +9,7 @@ import sendIcon from './sendButton.png';
 import enlargeIcon from './enlargeIcon.png';
 import shrinkIcon from './shrinkIcon.png';
 
-const SOCKET_SERVER_URL = "https://flowise-udvikling.onrender.com";
+const placeholderSOCKET_SERVER_URL = "https://flowise-udvikling.onrender.com";
 const placeholderAPI = "https://flowise-udvikling.onrender.com/api/v1/prediction/a3e86073-8eda-401d-90d1-7127fb707f99";
 
 const TypingIndicator = styled.div`
@@ -262,9 +262,43 @@ const App = () => {
 
   const socket = useRef(null);
 
+  const [apiEndpoint, setApiEndpoint] = useState('');
+  const [titleLogoG, setTitleLogoG] = useState('');
+  const [headerLogoG, setHeaderLogoG] = useState('');
+  const [themeColor, setThemeColor] = useState('');
+  const [pagePath, setPagePath] = useState('');
+  const [headerTitleG, setHeaderTitleG] = useState('');
+  const [headerSubtitleG, setHeaderSubtitleG] = useState('');
+  const [titleG, setTitleG] = useState('');
+
+  useEffect(() => {
+    const handleMessage = (event) => {
+      // Handle the message based on the action
+      if (event.data && event.data.action === 'integrationOptions') {
+        // Set your API endpoint state here
+        setApiEndpoint(event.data.apiEndpoint);
+        setTitleLogoG(event.data.titleLogoG);
+        setHeaderLogoG(event.data.headerLogoG);
+        setThemeColor(event.data.themeColor);
+        setPagePath(event.data.pagePath);
+        setHeaderTitleG(event.data.headerTitleG);
+        setHeaderSubtitleG(event.data.headerSubtitleG);
+        setTitleG(event.data.titleG);
+      }
+    };
+  
+    // Add the event listener
+    window.addEventListener('message', handleMessage);
+  
+    // Clean up the event listener on component unmount
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, []);
+
   useEffect(() => {
 
-    socket.current = socketIOClient(SOCKET_SERVER_URL);
+    socket.current = socketIOClient(SOCKET_SERVER_URL||placeholderSOCKET_SERVER_URL);
   
     socket.current.on('connect', () => {
       setSocketIOClientId(socket.current.id);
@@ -383,40 +417,6 @@ const App = () => {
   function closeChat() {
     window.parent.postMessage({ action: 'closeChat' }, pagePath); // Make sure this matches the actual parent domain
   }
-
-  const [apiEndpoint, setApiEndpoint] = useState('');
-  const [titleLogoG, setTitleLogoG] = useState('');
-  const [headerLogoG, setHeaderLogoG] = useState('');
-  const [themeColor, setThemeColor] = useState('');
-  const [pagePath, setPagePath] = useState('');
-  const [headerTitleG, setHeaderTitleG] = useState('');
-  const [headerSubtitleG, setHeaderSubtitleG] = useState('');
-  const [titleG, setTitleG] = useState('');
-
-  useEffect(() => {
-    const handleMessage = (event) => {
-      // Handle the message based on the action
-      if (event.data && event.data.action === 'integrationOptions') {
-        // Set your API endpoint state here
-        setApiEndpoint(event.data.apiEndpoint);
-        setTitleLogoG(event.data.titleLogoG);
-        setHeaderLogoG(event.data.headerLogoG);
-        setThemeColor(event.data.themeColor);
-        setPagePath(event.data.pagePath);
-        setHeaderTitleG(event.data.headerTitleG);
-        setHeaderSubtitleG(event.data.headerSubtitleG);
-        setTitleG(event.data.titleG);
-      }
-    };
-  
-    // Add the event listener
-    window.addEventListener('message', handleMessage);
-  
-    // Clean up the event listener on component unmount
-    return () => {
-      window.removeEventListener('message', handleMessage);
-    };
-  }, []);
   
 
   return (

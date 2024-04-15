@@ -300,7 +300,7 @@ const App = () => {
 
   useEffect(() => {
 
-    socket.current = socketIOClient(SOCKET_SERVER_URL);
+    socket.current = socketIOClient(SOCKET_SERVER_URL||placeholderSOCKET_SERVER_URL);
   
     socket.current.on('connect', () => {
       setSocketIOClientId(socket.current.id);

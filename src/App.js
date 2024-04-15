@@ -286,8 +286,8 @@ const App = () => {
         setHeaderTitleG(event.data.headerTitleG);
         setHeaderSubtitleG(event.data.headerSubtitleG);
         setTitleG(event.data.titleG);
-        if(SOCKET_SERVER_URL){
-          placeholderSOCKET_SERVER_URL=SOCKET_SERVER_URL;
+        if(SOCKET_SERVER_URL != null){
+          placeholderSOCKET_SERVER_URL = SOCKET_SERVER_URL;
         }
       }
     };

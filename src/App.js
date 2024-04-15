@@ -262,6 +262,7 @@ const App = () => {
 
   const socket = useRef(null);
 
+  const [SOCKET_SERVER_URL, setSOCKET_SERVER_URL] = useState('');
   const [apiEndpoint, setApiEndpoint] = useState('');
   const [titleLogoG, setTitleLogoG] = useState('');
   const [headerLogoG, setHeaderLogoG] = useState('');
@@ -276,6 +277,7 @@ const App = () => {
       // Handle the message based on the action
       if (event.data && event.data.action === 'integrationOptions') {
         // Set your API endpoint state here
+        setSOCKET_SERVER_URL(event.data.SOCKET_SERVER_URL);
         setApiEndpoint(event.data.apiEndpoint);
         setTitleLogoG(event.data.titleLogoG);
         setHeaderLogoG(event.data.headerLogoG);
@@ -284,6 +286,9 @@ const App = () => {
         setHeaderTitleG(event.data.headerTitleG);
         setHeaderSubtitleG(event.data.headerSubtitleG);
         setTitleG(event.data.titleG);
+        if(SOCKET_SERVER_URL){
+          placeholderSOCKET_SERVER_URL=SOCKET_SERVER_URL;
+        }
       }
     };
   
@@ -298,7 +303,7 @@ const App = () => {
 
   useEffect(() => {
 
-    socket.current = socketIOClient(SOCKET_SERVER_URL||placeholderSOCKET_SERVER_URL);
+    socket.current = socketIOClient(placeholderSOCKET_SERVER_URL);
   
     socket.current.on('connect', () => {
       setSocketIOClientId(socket.current.id);

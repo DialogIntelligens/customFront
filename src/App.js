@@ -299,12 +299,12 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    if (socket.current) {
-      socket.current.disconnect();
-    }
+
+    socket.current = socketIOClient(SOCKET_SERVER_URL||placeholderSOCKET_SERVER_URL);
   
-    if (SOCKET_SERVER_URL) {
-      socket.current = socketIOClient(SOCKET_SERVER_URL);
+    socket.current.on('connect', () => {
+      setSocketIOClientId(socket.current.id);
+    });
   
     socket.current.on('start', () => {
       setConversation(prevConv => [...prevConv, { text: '', isUser: false }]);
@@ -328,7 +328,6 @@ const App = () => {
     return () => {
       socket.current.disconnect();
     };
-  }
   }, []);
 
   const sendMessage = async () => {

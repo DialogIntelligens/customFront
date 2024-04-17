@@ -270,6 +270,7 @@ const App = () => {
   const [headerTitleG, setHeaderTitleG] = useState('');
   const [headerSubtitleG, setHeaderSubtitleG] = useState('');
   const [titleG, setTitleG] = useState('');
+  const [SOCKET_SERVER_URL, setSocketServerUrl] = useState('');
 
   useEffect(() => {
     const handleMessage = (event) => {

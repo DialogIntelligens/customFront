@@ -300,7 +300,7 @@ const App = () => {
 
   useEffect(() => {
 
-    socket.current = socketIOClient(socketServerUrl||placeholderSOCKET_SERVER_URL);
+    socket.current = socketIOClient(SOCKET_SERVER_URL||placeholderSOCKET_SERVER_URL);
   
     socket.current.on('connect', () => {
       setSocketIOClientId(socket.current.id);
@@ -328,7 +328,7 @@ const App = () => {
     return () => {
       socket.current.disconnect();
     };
-  }, [socketServerUrl]);
+  }, [SOCKET_SERVER_URL]);
 
   const sendMessage = async () => {
     // Start loading state

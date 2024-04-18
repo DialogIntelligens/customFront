@@ -489,7 +489,7 @@ const App = () => {
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-        placeholder="Skriv dit spørgsmål her..."
+        placeholder="Skriv dit spørgsmål her.."
       />
       {message && (
         <SendButton

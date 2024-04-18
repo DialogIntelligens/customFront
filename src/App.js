@@ -348,7 +348,7 @@ const App = () => {
     }]);
 
     const tempHis = conversationHis;
-    tempHis.splice(0, tempHis.length - 4);
+    tempHis.splice(0, tempHis.length - 5);
     setConversationHis(tempHis);
   
     // Add the message to the conversation

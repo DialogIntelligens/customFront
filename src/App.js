@@ -259,7 +259,6 @@ const App = () => {
   const [socketIOClientId, setSocketIOClientId] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isEnlarged, setIsEnlarged] = useState(false);
-  const historyLength = 4;
 
   const socket = useRef(null);
 
@@ -272,6 +271,7 @@ const App = () => {
   const [headerSubtitleG, setHeaderSubtitleG] = useState('');
   const [titleG, setTitleG] = useState('');
   const [SOCKET_SERVER_URL, setSocketServerUrl] = useState('');
+  const memoryLength = 4;
 
   useEffect(() => {
     const handleMessage = (event) => {
@@ -342,20 +342,16 @@ const App = () => {
       return;
     }
     
-     // Add the user message to the conversationHis
-     setConversationHis(prevHis => {
-      const newHistory = [...prevHis, {
-        message: message,
-        type: "userMessage"
-      }];
+    // Add the user message to the conversationHis
+    setConversationHis(prevHis => [...prevHis, {
+      message: message,
+      type: "userMessage"
+    }]);
 
-      // Keep only the last 4 messages
-      if (newHistory.length > historyLength) {
-        return newHistory.slice(-historyLength); // Keep the last 4 items
-      }
-
-      return newHistory;
-    });
+    // If there are more than 4 messages, remove the first 2
+    if (newHistory.length > memoryLength) {
+      return newHistory.slice(2);
+    }
   
     // Add the message to the conversation
     setConversation(prevConv => [...prevConv, { text: message, isUser: true }]);
@@ -377,19 +373,10 @@ const App = () => {
 
         const apiResponseMessage = jsonResponse.text;
         // Add the API response message to the conversationHis
-        setConversationHis(prevHis => {
-          const newHistory = [...prevHis, {
-            message: apiResponseMessage,
-            type: "apiMessage"
-          }];
-
-          // Keep only the last 4 messages
-          if (newHistory.length > historyLength) {
-            return newHistory.slice(-historyLength); // Keep the last 4 items
-          }
-
-          return newHistory;
-        });
+        setConversationHis(prevHis => [...prevHis, {
+          message: apiResponseMessage,
+          type: "apiMessage"
+        }]);
 
       } else {
         console.error(`HTTP error! status: ${response.status}`);

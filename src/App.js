@@ -349,8 +349,8 @@ const App = () => {
     }]);
 
     // If there are more than 4 messages, remove the first 2
-    if (newHistory.length > memoryLength) {
-      return newHistory.slice(2);
+    if (conversationHis.length > memoryLength) {
+      setConversationHis (conversationHis.slice(2));
     }
   
     // Add the message to the conversation

@@ -259,6 +259,7 @@ const App = () => {
   const [socketIOClientId, setSocketIOClientId] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isEnlarged, setIsEnlarged] = useState(false);
+  const historyLength = 4;
 
   const socket = useRef(null);
 
@@ -349,7 +350,6 @@ const App = () => {
       }];
 
       // Keep only the last 4 messages
-      const historyLength = 4;
       if (newHistory.length > historyLength) {
         return newHistory.slice(-historyLength); // Keep the last 4 items
       }

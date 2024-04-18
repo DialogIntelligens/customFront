@@ -360,8 +360,10 @@ const App = () => {
           "Content-Type": "application/json",
           "Authorization": "Bearer your_token", // Ensure this is secure
         },
-        body: JSON.stringify({ question: message, "history": conversationHis.slice(-memoryLength), socketIOClientId }),
+        body: JSON.stringify({ question: message, "history": conversationHis.slice(-2), socketIOClientId }),
       });
+
+      console.log (conversationHis.slice(-2));
   
       if (response.ok) {
         const jsonResponse = await response.json();

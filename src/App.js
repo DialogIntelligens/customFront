@@ -342,23 +342,11 @@ const App = () => {
       return;
     }
     
-  // Prepare to add the new message
-  const newUserMessage = {
-    message: message,
-    type: "userMessage"
-  };
-
-  // Add the message to conversationHis conditionally
-  setConversationHis(prevHis => {
-    const newHistory = [...prevHis, newUserMessage];
-
-    // If there are more than 4 messages, remove the first 2
-    if (newHistory.length > memoryLength) {
-      return newHistory.slice(-memoryLength); // Only keep the last 4 messages
-    }
-
-    return newHistory;
-  });
+    // Add the user message to the conversationHis
+    setConversationHis(prevHis => [...prevHis, {
+      message: message,
+      type: "userMessage"
+    }]);
   
     // Add the message to the conversation
     setConversation(prevConv => [...prevConv, { text: message, isUser: true }]);
@@ -372,7 +360,7 @@ const App = () => {
           "Content-Type": "application/json",
           "Authorization": "Bearer your_token", // Ensure this is secure
         },
-        body: JSON.stringify({ question: message, "history": conversationHis, socketIOClientId }),
+        body: JSON.stringify({ question: message, "history": conversationHis.slice(-memoryLength), socketIOClientId }),
       });
   
       if (response.ok) {

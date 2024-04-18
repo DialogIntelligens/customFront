@@ -271,7 +271,6 @@ const App = () => {
   const [headerSubtitleG, setHeaderSubtitleG] = useState('');
   const [titleG, setTitleG] = useState('');
   const [SOCKET_SERVER_URL, setSocketServerUrl] = useState('');
-  const memoryLength = 4;
 
   useEffect(() => {
     const handleMessage = (event) => {
@@ -342,19 +341,11 @@ const App = () => {
       return;
     }
     
-    const newUserMessage = {
+    // Add the user message to the conversationHis
+    setConversationHis(prevHis => [...prevHis, {
       message: message,
       type: "userMessage"
-    };
-
-    setConversationHis(prevHis => {
-      const newHistory = [...prevHis, newUserMessage];
-      const slicedHistory = newHistory.length > 4 ? newHistory.slice(-4) : newHistory;
-      console.log("Updated History (sliced if necessary):", slicedHistory); // Logs right at the moment of update
-      return slicedHistory;
-    });
-
-
+    }]);
   
     // Add the message to the conversation
     setConversation(prevConv => [...prevConv, { text: message, isUser: true }]);
@@ -489,7 +480,7 @@ const App = () => {
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-        placeholder="Skriv dit spørgsmål her.."
+        placeholder="Skriv dit spørgsmål her..."
       />
       {message && (
         <SendButton

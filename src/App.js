@@ -341,11 +341,21 @@ const App = () => {
       return;
     }
     
-    // Add the user message to the conversationHis
-    setConversationHis(prevHis => [...prevHis, {
-      message: message,
-      type: "userMessage"
-    }]);
+     // Add the user message to the conversationHis
+     setConversationHis(prevHis => {
+      const newHistory = [...prevHis, {
+        message: message,
+        type: "userMessage"
+      }];
+
+      // Keep only the last 4 messages
+      const historyLength = 4;
+      if (newHistory.length > historyLength) {
+        return newHistory.slice(-historyLength); // Keep the last 4 items
+      }
+
+      return newHistory;
+    });
   
     // Add the message to the conversation
     setConversation(prevConv => [...prevConv, { text: message, isUser: true }]);
@@ -367,10 +377,19 @@ const App = () => {
 
         const apiResponseMessage = jsonResponse.text;
         // Add the API response message to the conversationHis
-        setConversationHis(prevHis => [...prevHis, {
-          message: apiResponseMessage,
-          type: "apiMessage"
-        }]);
+        setConversationHis(prevHis => {
+          const newHistory = [...prevHis, {
+            message: apiResponseMessage,
+            type: "apiMessage"
+          }];
+
+          // Keep only the last 4 messages
+          if (newHistory.length > historyLength) {
+            return newHistory.slice(-historyLength); // Keep the last 4 items
+          }
+
+          return newHistory;
+        });
 
       } else {
         console.error(`HTTP error! status: ${response.status}`);

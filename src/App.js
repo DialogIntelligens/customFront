@@ -346,6 +346,10 @@ const App = () => {
       message: message,
       type: "userMessage"
     }]);
+
+    const tempHis = conversationHis;
+    tempHis.splice(0, tempHis.length - 4);
+    setConversationHis(tempHis);
   
     // Add the message to the conversation
     setConversation(prevConv => [...prevConv, { text: message, isUser: true }]);

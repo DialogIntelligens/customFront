@@ -342,11 +342,19 @@ const App = () => {
       return;
     }
     
-    // Add the user message to the conversationHis
-    setConversationHis(prevHis => [...prevHis, {
+    const newUserMessage = {
       message: message,
       type: "userMessage"
-    }]);
+    };
+
+    setConversationHis(prevHis => {
+      const newHistory = [...prevHis, newUserMessage];
+      const slicedHistory = newHistory.length > 4 ? newHistory.slice(-4) : newHistory;
+      console.log("Updated History (sliced if necessary):", slicedHistory); // Logs right at the moment of update
+      return slicedHistory;
+    });
+
+
   
     // Add the message to the conversation
     setConversation(prevConv => [...prevConv, { text: message, isUser: true }]);
@@ -360,10 +368,8 @@ const App = () => {
           "Content-Type": "application/json",
           "Authorization": "Bearer your_token", // Ensure this is secure
         },
-        body: JSON.stringify({ question: message, "history": conversationHis.slice(-2), socketIOClientId }),
+        body: JSON.stringify({ question: message, "history": conversationHis, socketIOClientId }),
       });
-
-      console.log (conversationHis.slice(-2));
   
       if (response.ok) {
         const jsonResponse = await response.json();

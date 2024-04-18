@@ -342,16 +342,23 @@ const App = () => {
       return;
     }
     
-    // Add the user message to the conversationHis
-    setConversationHis(prevHis => [...prevHis, {
-      message: message,
-      type: "userMessage"
-    }]);
+  // Prepare to add the new message
+  const newUserMessage = {
+    message: message,
+    type: "userMessage"
+  };
+
+  // Add the message to conversationHis conditionally
+  setConversationHis(prevHis => {
+    const newHistory = [...prevHis, newUserMessage];
 
     // If there are more than 4 messages, remove the first 2
-    if (conversationHis.length > memoryLength) {
-      setConversationHis (conversationHis.slice(2));
+    if (newHistory.length > memoryLength) {
+      return newHistory.slice(-memoryLength); // Only keep the last 4 messages
     }
+
+    return newHistory;
+  });
   
     // Add the message to the conversation
     setConversation(prevConv => [...prevConv, { text: message, isUser: true }]);

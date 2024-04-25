@@ -340,16 +340,16 @@ const App = () => {
       setIsLoading(false); // Stop loading state if there is an error
       return;
     }
-    
+
+    const tempHis = conversationHis;
+    tempHis.splice(0, tempHis.length - 5);
+    setConversationHis(tempHis);
+
     // Add the user message to the conversationHis
     setConversationHis(prevHis => [...prevHis, {
       message: message,
       type: "userMessage"
     }]);
-
-    const tempHis = conversationHis;
-    tempHis.splice(0, tempHis.length - 5);
-    setConversationHis(tempHis);
   
     // Add the message to the conversation
     setConversation(prevConv => [...prevConv, { text: message, isUser: true }]);

@@ -459,7 +459,7 @@ const App = () => {
             return (
               <MessageContainer key={index} $isUser={entry.isUser}>
                {!entry.isUser && <MessageLogo src={headerLogoG||DIlogo} alt="AI Logo" />}
-              <Message $isUser={entry.isUser} themeColor={themeColor}>
+              <Message $isUser={entry.isUser} themeColor={themeColor||'#5083e3'}>
               <div>{parse(formattedText)}</div>
               </Message>
               </MessageContainer>

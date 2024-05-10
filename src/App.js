@@ -361,7 +361,7 @@ const App = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": "Bearer your_token", // Ensure this is secure
+          "Authorization": "Bearer wEfLmtcJ4Mj2DODkFDWq2ggjjJ6gJ125sJJpfMR/Aeg=", // Ensure this is secure
         },
         body: JSON.stringify({ question: message, "history": conversationHis, socketIOClientId }),
       });

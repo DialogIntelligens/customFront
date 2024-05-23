@@ -442,7 +442,7 @@ const App = () => {
         <div style={{ flexGrow: 1, overflow: 'auto' }}>
           <Header>
             <HeaderLogo src={headerLogoG || DIlogo} alt="Logo" />
-            <HeaderTitle>{headerTitleG || "Dialog Intelligens AI"}</HeaderTitle>
+            <HeaderTitle>{headerTitleG}</HeaderTitle>
             <HeaderSubtitle>{headerSubtitleG || "Vores virtuelle assistent er her for at hjælpe dig."}</HeaderSubtitle>
           </Header>
           {conversation.map((entry, index) => {

@@ -365,6 +365,8 @@ const App = () => {
         body: JSON.stringify({ question: message, "history": conversationHis, socketIOClientId }),
       });
 
+      console.error(`History ${conversationHis}`);
+
       if (response.ok) {
         const jsonResponse = await response.json();
 

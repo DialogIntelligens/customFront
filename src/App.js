@@ -68,7 +68,7 @@ const TitleBar = styled.div`
 
 const Logo = styled.img`
   height: 1.9em;
-  width: 1.9em;
+  width: ${props => props.titleG ? '1.9em' : 'auto'};
   margin-right: 0.64em;
 `;
 
@@ -86,7 +86,7 @@ const PoweredBy = styled.div`
   font-size: 0.64em;
 
   a {
-    color: ${props => props.themeColor ||'#007bff'}; // Adjust the color to fit your design
+    color: ${props => props.themeColor || '#007bff'}; // Adjust the color to fit your design
     text-decoration: none;
 
     &:hover {
@@ -122,15 +122,15 @@ const RestartButton = styled.img`
 `;
 
 const EnlargeButton = styled.img`
-position: absolute;
-top: 1em; 
-right: 4.2em; // Adjust this so it doesn't overlap with the CloseButton
-cursor: pointer;
-width: 1.33em; // Set an appropriate size for the image
-height: 1.33em; // Maintain the aspect ratio
-&:hover {
-  opacity: 0.7;
-}
+  position: absolute;
+  top: 1em; 
+  right: 4.2em; // Adjust this so it doesn't overlap with the CloseButton
+  cursor: pointer;
+  width: 1.33em; // Set an appropriate size for the image
+  height: 1.33em; // Maintain the aspect ratio
+  &:hover {
+    opacity: 0.7;
+  }
 `;
 
 const Header = styled.div`
@@ -174,10 +174,10 @@ const ChatWindow = styled.div`
 `;
 
 const MessageLogo = styled.img`
-height: 1.3em; // Adjust to the size you need
-width: 1.3em; // Maintain aspect ratio
-margin-right: 0em; // Space between logo and text
-margin-top: 1em;
+  height: 1.3em; // Adjust to the size you need
+  width: 1.3em; // Maintain aspect ratio
+  margin-right: 0em; // Space between logo and text
+  margin-top: 1em;
 `;
 
 const MessageContainer = styled.div`
@@ -222,7 +222,6 @@ const SendButton = styled.img`
   bottom: 0.75em; // Adjust based on the size of ChatInput to vertically align it
 `;
 
-
 const ChatInput = styled.input`
   background-color: white;
   padding: 0.64em; /* Padding inside the input */
@@ -250,10 +249,10 @@ const App = () => {
     { text: "Hej, hvad kan jeg hjælpe dig med?", isUser: false }
   ]);
   const [conversationHis, setConversationHis] = useState([
-  {
+    {
       "message": "Hej, hvad kan jeg hjælpe dig med?",
       "type": "apiMessage"
-  }
+    }
   ]);
   const [message, setMessage] = useState('');
   const [socketIOClientId, setSocketIOClientId] = useState('');
@@ -288,10 +287,10 @@ const App = () => {
         setSocketServerUrl(event.data.SOCKET_SERVER_URL);
       }
     };
-  
+
     // Add the event listener
     window.addEventListener('message', handleMessage);
-  
+
     // Clean up the event listener on component unmount
     return () => {
       window.removeEventListener('message', handleMessage);
@@ -300,16 +299,16 @@ const App = () => {
 
   useEffect(() => {
 
-    socket.current = socketIOClient(SOCKET_SERVER_URL||placeholderSOCKET_SERVER_URL);
-  
+    socket.current = socketIOClient(SOCKET_SERVER_URL || placeholderSOCKET_SERVER_URL);
+
     socket.current.on('connect', () => {
       setSocketIOClientId(socket.current.id);
     });
-  
+
     socket.current.on('start', () => {
       setConversation(prevConv => [...prevConv, { text: '', isUser: false }]);
     });
-  
+
     socket.current.on('token', (token) => {
       setIsLoading(false);
       setConversation(prevConv => {
@@ -322,9 +321,9 @@ const App = () => {
         return newConv;
       });
     });
-  
-    socket.current.on('end', () => {});
-  
+
+    socket.current.on('end', () => { });
+
     return () => {
       socket.current.disconnect();
     };
@@ -333,7 +332,7 @@ const App = () => {
   const sendMessage = async () => {
     // Start loading state
     setIsLoading(true);
-  
+
     // Ensure the message is not empty
     if (!message.trim()) {
       console.error("Message is empty.");
@@ -350,14 +349,14 @@ const App = () => {
       message: message,
       type: "userMessage"
     }]);
-  
+
     // Add the message to the conversation
     setConversation(prevConv => [...prevConv, { text: message, isUser: true }]);
     setMessage(''); // Clear the input after sending
-    
+
     try {
       // Use the apiEndpoint from the state in your fetch call
-      const response = await fetch(apiEndpoint||placeholderAPI, {
+      const response = await fetch(apiEndpoint || placeholderAPI, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -365,7 +364,7 @@ const App = () => {
         },
         body: JSON.stringify({ question: message, "history": conversationHis, socketIOClientId }),
       });
-  
+
       if (response.ok) {
         const jsonResponse = await response.json();
 
@@ -385,8 +384,6 @@ const App = () => {
       setIsLoading(false); // Stop loading state after the request
     }
   };
-  
-  
 
   const messagesEndRef = useRef(null);
 
@@ -402,18 +399,18 @@ const App = () => {
   const resetChat = () => {
     // Optionally: Disconnect existing socket connection
     socket.current.disconnect();
-  
+
     // Reset conversation
     setConversation([{ text: "Hej, hvad kan jeg hjælpe dig med?", isUser: false }]);
     setConversationHis([{
       "message": "Hej, hvad kan jeg hjælpe dig med?",
       "type": "apiMessage"
-  }]);
-  
+    }]);
+
     // Reset other relevant states (e.g., message, isLoading)
     setMessage('');
     setIsLoading(false);
-  
+
     // Optionally: Reconnect the socket connection if you've disconnected it
     socket.current.connect();
   };
@@ -423,21 +420,20 @@ const App = () => {
   function closeChat() {
     window.parent.postMessage({ action: 'closeChat' }, pagePath); // Make sure this matches the actual parent domain
   }
-  
 
   return (
     <>
       <ChatWindow>
         <TitleBar themeColor={themeColor}>
-          <Logo src={titleLogoG||titleLogo} alt="Logo" />
-          <Title>{titleG||"Dialog Intelligens ApS"}</Title>
-          <RestartButton 
+          <Logo src={titleLogoG || titleLogo} alt="Logo" titleG={titleG} />
+          <Title>{titleG || "Dialog Intelligens ApS"}</Title>
+          <RestartButton
             src={restartIcon} // Replace with the actual path to your restart button image
             alt="Restart Chat"
             onClick={resetChat}
           />
           <CloseButton onClick={closeChat}>×</CloseButton>
-          <EnlargeButton 
+          <EnlargeButton
             src={isEnlarged ? shrinkIcon : enlargeIcon}
             alt="Toggle Size"
             onClick={toggleSize}
@@ -445,58 +441,58 @@ const App = () => {
         </TitleBar>
         <div style={{ flexGrow: 1, overflow: 'auto' }}>
           <Header>
-            <HeaderLogo src={headerLogoG||DIlogo} alt="Logo" />
-            <HeaderTitle>{headerTitleG||"Dialog Intelligens AI"}</HeaderTitle>
-            <HeaderSubtitle>{headerSubtitleG||"Vores virtuelle assistent er her for at hjælpe dig."}</HeaderSubtitle>
+            <HeaderLogo src={headerLogoG || DIlogo} alt="Logo" />
+            <HeaderTitle>{headerTitleG || "Dialog Intelligens AI"}</HeaderTitle>
+            <HeaderSubtitle>{headerSubtitleG || "Vores virtuelle assistent er her for at hjælpe dig."}</HeaderSubtitle>
           </Header>
           {conversation.map((entry, index) => {
             const formattedText = entry.text
-               // Convert line breaks followed by "- " to bullet points
+              // Convert line breaks followed by "- " to bullet points
               .replace(/\n- /g, "\n\u2022 ")
               // Convert text surrounded by "**" to bold
               .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-  
+
             return (
               <MessageContainer key={index} $isUser={entry.isUser}>
-               {!entry.isUser && <MessageLogo src={headerLogoG||DIlogo} alt="AI Logo" />}
-              <Message $isUser={entry.isUser} themeColor={themeColor||'#5083e3'}>
-              <div>{parse(formattedText)}</div>
-              </Message>
+                {!entry.isUser && <MessageLogo src={headerLogoG || DIlogo} alt="AI Logo" />}
+                <Message $isUser={entry.isUser} themeColor={themeColor || '#5083e3'}>
+                  <div>{parse(formattedText)}</div>
+                </Message>
               </MessageContainer>
             );
-        })}
-        
-        {isLoading && (
-          <TypingIndicator>
-            <MessageLogo src={headerLogoG||DIlogo} alt="AI Logo" />
-            <LoadingIndicator>
-              <div></div>
-              <div></div>
-              <div></div>
-            </LoadingIndicator>
-          </TypingIndicator>
-        )}
-        <div ref={messagesEndRef} /> {/* Invisible element to scroll into view */}
-    </div>
-    <InputContainer>
-      <ChatInput
-        type="text"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-        placeholder="Skriv dit spørgsmål her..."
-      />
-      {message && (
-        <SendButton
-          src={sendIcon}
-          alt="Send"
-          onClick={sendMessage}
-        />
-      )}
-    </InputContainer>
-      <PoweredBy themeColor={themeColor}>
-        Powered by <a href="https://dialogintelligens.dk" target="_blank" rel="noopener noreferrer">Dialog Intelligens</a>
-      </PoweredBy>
+          })}
+
+          {isLoading && (
+            <TypingIndicator>
+              <MessageLogo src={headerLogoG || DIlogo} alt="AI Logo" />
+              <LoadingIndicator>
+                <div></div>
+                <div></div>
+                <div></div>
+              </LoadingIndicator>
+            </TypingIndicator>
+          )}
+          <div ref={messagesEndRef} /> {/* Invisible element to scroll into view */}
+        </div>
+        <InputContainer>
+          <ChatInput
+            type="text"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+            placeholder="Skriv dit spørgsmål her..."
+          />
+          {message && (
+            <SendButton
+              src={sendIcon}
+              alt="Send"
+              onClick={sendMessage}
+            />
+          )}
+        </InputContainer>
+        <PoweredBy themeColor={themeColor}>
+          Powered by <a href="https://dialogintelligens.dk" target="_blank" rel="noopener noreferrer">Dialog Intelligens</a>
+        </PoweredBy>
       </ChatWindow>
     </>
   );

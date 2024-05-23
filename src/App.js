@@ -362,7 +362,7 @@ const App = () => {
           "Content-Type": "application/json",
           "Authorization": "Bearer wEfLmtcJ4Mj2DODkFDWq2ggjjJ6gJ125sJJpfMR/Aeg=", // Ensure this is secure
         },
-        body: JSON.stringify({ question: message, "chat_history": conversationHis, socketIOClientId }),
+        body: JSON.stringify({ question: message, "history": conversationHis, socketIOClientId }),
       });
 
       console.error(`History ${JSON.stringify(conversationHis)}`);

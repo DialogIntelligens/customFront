@@ -426,7 +426,7 @@ const App = () => {
       <ChatWindow>
         <TitleBar themeColor={themeColor}>
           <Logo src={titleLogoG || titleLogo} alt="Logo" titleG={titleG} />
-          <Title>{titleG || "Dialog Intelligens ApS"}</Title>
+          <Title>{titleG}</Title>
           <RestartButton
             src={restartIcon} // Replace with the actual path to your restart button image
             alt="Restart Chat"
@@ -442,7 +442,7 @@ const App = () => {
         <div style={{ flexGrow: 1, overflow: 'auto' }}>
           <Header>
             <HeaderLogo src={headerLogoG || DIlogo} alt="Logo" />
-            <HeaderTitle>{headerTitleG}</HeaderTitle>
+            <HeaderTitle>{headerTitleG || "Dialog Intelligens AI"}</HeaderTitle>
             <HeaderSubtitle>{headerSubtitleG || "Vores virtuelle assistent er her for at hjælpe dig."}</HeaderSubtitle>
           </Header>
           {conversation.map((entry, index) => {

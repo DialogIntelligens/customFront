@@ -365,7 +365,7 @@ const App = () => {
         body: JSON.stringify({ question: message, "chat_history": conversationHis, socketIOClientId }),
       });
 
-      console.error(`History ${conversationHis}`);
+      console.error(`History ${JSON.stringify(conversationHis)}`);
 
       if (response.ok) {
         const jsonResponse = await response.json();

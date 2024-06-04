@@ -250,8 +250,8 @@ const App = () => {
   ]);
   const [conversationHis, setConversationHis] = useState([
     {
-      "message": "Hej, hvad kan jeg hjælpe dig med?",
-      "type": "apiMessage"
+      "content": "Hej, hvad kan jeg hjælpe dig med?",
+      "role": "apiMessage"
     }
   ]);
   const [message, setMessage] = useState('');
@@ -346,8 +346,8 @@ const App = () => {
 
     // Add the user message to the conversationHis
     setConversationHis(prevHis => [...prevHis, {
-      message: message,
-      type: "userMessage"
+      content: message,
+      role: "userMessage"
     }]);
 
     // Add the message to the conversation
@@ -365,16 +365,14 @@ const App = () => {
         body: JSON.stringify({ question: message, "history": conversationHis, socketIOClientId }),
       });
 
-      console.error(`History ${JSON.stringify(conversationHis)}`);
-
       if (response.ok) {
         const jsonResponse = await response.json();
 
         const apiResponseMessage = jsonResponse.text;
         // Add the API response message to the conversationHis
         setConversationHis(prevHis => [...prevHis, {
-          message: apiResponseMessage,
-          type: "apiMessage"
+          content: apiResponseMessage,
+          role: "apiMessage"
         }]);
 
       } else {
@@ -398,6 +396,18 @@ const App = () => {
     window.parent.postMessage({ action: 'toggleSize' }, pagePath); // Ensure the domain is correct for security
   };
 
+  // Custom function to parse and style Markdown headers
+  const parseMarkdownHeaders = (text) => {
+    // Split text into lines to check for Markdown headers
+    return text.split('\n').map(line => {
+      if (line.startsWith('### ')) { // Checks for headers
+        return `<h3>${line.replace('### ', '')}</h3>`; // Replaces and wraps with h3 tags
+      } else {
+        return line; // Returns the line unchanged if not a header
+      }
+    }).join('<br>'); // Joins lines back with line breaks for HTML
+  };
+
   const resetChat = () => {
     // Optionally: Disconnect existing socket connection
     socket.current.disconnect();
@@ -405,8 +415,8 @@ const App = () => {
     // Reset conversation
     setConversation([{ text: "Hej, hvad kan jeg hjælpe dig med?", isUser: false }]);
     setConversationHis([{
-      "message": "Hej, hvad kan jeg hjælpe dig med?",
-      "type": "apiMessage"
+      "content": "Hej, hvad kan jeg hjælpe dig med?",
+      "role": "apiMessage"
     }]);
 
     // Reset other relevant states (e.g., message, isLoading)
@@ -449,16 +459,19 @@ const App = () => {
           </Header>
           {conversation.map((entry, index) => {
             const formattedText = entry.text
-              // Convert line breaks followed by "- " to bullet points
-              .replace(/\n- /g, "\n\u2022 ")
-              // Convert text surrounded by "**" to bold
-              .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+              .replace(/\n- /g, "\n\u2022 ") // Bullet points
+              .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"); // Bold text
 
+            const textWithHeaders = parseMarkdownHeaders(formattedText); // Fixed function call
+
+            // In MessageContainer, you can check for user vs. AI messages and apply appropriate styling
+            const isUser = entry.isUser;
+            const messageClasses = isUser ? "userMessage" : "aiMessage"; // Differentiate styles
             return (
-              <MessageContainer key={index} $isUser={entry.isUser}>
-                {!entry.isUser && <MessageLogo src={headerLogoG || DIlogo} alt="AI Logo" />}
-                <Message $isUser={entry.isUser} themeColor={themeColor || '#5083e3'}>
-                  <div>{parse(formattedText)}</div>
+              <MessageContainer key={index} $isUser={isUser}>
+                {!isUser && <MessageLogo src={headerLogoG || DIlogo} alt="AI Logo" />}
+                <Message $isUser={isUser} themeColor={themeColor || '#5083e3'}>
+                  <div className={messageClasses}>{parse(textWithHeaders)}</div>
                 </Message>
               </MessageContainer>
             );

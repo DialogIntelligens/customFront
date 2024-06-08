@@ -9,8 +9,8 @@ import sendIcon from './sendButton.png';
 import enlargeIcon from './enlargeIcon.png';
 import shrinkIcon from './shrinkIcon.png';
 
-const placeholderSOCKET_SERVER_URL = "https://flowise-udvikling.onrender.com";
-const placeholderAPI = "https://flowise-udvikling.onrender.com/api/v1/prediction/a3e86073-8eda-401d-90d1-7127fb707f99";
+const placeholderSOCKET_SERVER_URL = "https://den-megtige-maskine.onrender.com";
+const placeholderAPI = "https://den-megtige-maskine.onrender.com/api/v1/prediction/f0243d9a-338a-4adf-82c5-fb037a667a8e";
 
 const TypingIndicator = styled.div`
   display: flex;
@@ -408,6 +408,18 @@ const App = () => {
     }).join('<br>'); // Joins lines back with line breaks for HTML
   };
 
+  // Function to replace image URLs with img tags
+  const replaceImageUrlsWithImgTags = (text) => {
+    const urlRegex = /(https?:\/\/[^\s]+\.(?:png|jpg|jpeg|gif|webp))/g;
+    return text.replace(urlRegex, '<img src="$1" alt="Image" style="max-width:100%; height:auto;" />');
+  };
+
+  // Function to replace remaining URLs with anchor tags
+  const replaceUrlsWithLinks = (text) => {
+    const urlRegex = /((https?:\/\/[^\s]+))/g;
+    return text.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+  };
+
   const resetChat = () => {
     // Optionally: Disconnect existing socket connection
     socket.current.disconnect();
@@ -458,12 +470,13 @@ const App = () => {
             <HeaderSubtitle>{headerSubtitleG || "Vores virtuelle assistent er her for at hjælpe dig."}</HeaderSubtitle>
           </Header>
           {conversation.map((entry, index) => {
-            const formattedText = entry.text
-            .replace(/\n- /g, "\n\u2022 ") // Bullet points
-            .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") // Bold text
-            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'); // Links
+            let formattedText = entry.text
+              .replace(/\n- /g, "\n\u2022 ") // Bullet points
+              .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"); // Bold text
 
-            const textWithHeaders = parseMarkdownHeaders(formattedText); // Fixed function call
+            formattedText = parseMarkdownHeaders(formattedText); // Fixed function call
+            formattedText = replaceImageUrlsWithImgTags(formattedText); // Replace image URLs with img tags
+            formattedText = replaceUrlsWithLinks(formattedText); // Replace remaining URLs with links
 
             // In MessageContainer, you can check for user vs. AI messages and apply appropriate styling
             const isUser = entry.isUser;
@@ -472,7 +485,7 @@ const App = () => {
               <MessageContainer key={index} $isUser={isUser}>
                 {!isUser && <MessageLogo src={headerLogoG || DIlogo} alt="AI Logo" />}
                 <Message $isUser={isUser} themeColor={themeColor || '#5083e3'}>
-                  <div className={messageClasses}>{parse(textWithHeaders)}</div>
+                  <div className={messageClasses}>{parse(formattedText)}</div>
                 </Message>
               </MessageContainer>
             );

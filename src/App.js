@@ -459,8 +459,9 @@ const App = () => {
           </Header>
           {conversation.map((entry, index) => {
             const formattedText = entry.text
-              .replace(/\n- /g, "\n\u2022 ") // Bullet points
-              .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"); // Bold text
+            .replace(/\n- /g, "\n\u2022 ") // Bullet points
+            .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") // Bold text
+            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'); // Links
 
             const textWithHeaders = parseMarkdownHeaders(formattedText); // Fixed function call
 

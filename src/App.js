@@ -365,7 +365,7 @@ const App = () => {
           "Content-Type": "application/json",
           "Authorization": "Bearer wEfLmtcJ4Mj2DODkFDWq2ggjjJ6gJ125sJJpfMR/Aeg=", // Ensure this is secure
         },
-        body: JSON.stringify({ question: message, "history": conversationHis, socketIOClientId }),
+        body: JSON.stringify({ question: "dato: " + formattedDate + "\n" + message, "history": conversationHis, socketIOClientId }),
       });
 
       if (response.ok) {
@@ -435,6 +435,17 @@ const App = () => {
   function closeChat() {
     window.parent.postMessage({ action: 'closeChat' }, pagePath); // Make sure this matches the actual parent domain
   }
+
+    // Get the current date
+  const currentDate = new Date();
+
+  // Format the date as desired
+  const year = currentDate.getFullYear();
+  const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+  const day = currentDate.getDate().toString().padStart(2, '0');
+
+  // Display the date in YYYY-MM-DD format
+  const formattedDate = `${year}-${month}-${day}`;
 
   const renderMessageContent = (text) => {
     // Handle markdown links and strong tags

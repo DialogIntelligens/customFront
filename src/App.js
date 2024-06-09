@@ -437,59 +437,25 @@ const App = () => {
   }
 
   const renderMessageContent = (text) => {
-    // Handle markdown links
+    // Handle markdown links and strong tags
     const markdownLinkPattern = /\[([^\]]+)\]\(([^)]+)\)/g;
+    const strongTagPattern = /\*\*(.*?)\*\*/g;
+
     let parsedText = [];
-    let match;
     let lastIndex = 0;
 
-    while ((match = markdownLinkPattern.exec(text)) !== null) {
-      const [fullMatch, linkText, linkUrl] = match;
-
-      // Add text before the match
-      if (match.index > lastIndex) {
-        parsedText.push(text.slice(lastIndex, match.index));
-      }
-
-      // Check if the link is an image
-      if (isImageUrl(linkUrl)) {
-        parsedText.push(<img key={linkUrl} src={linkUrl} alt={linkText} style={{ maxWidth: '100%', margin: '0.5em 0' }} />);
-      } else {
-        parsedText.push(
-          <a key={linkUrl} href={linkUrl} target="_blank" rel="noopener noreferrer">
-            {linkText}
-          </a>
-        );
-      }
-
-      lastIndex = match.index + fullMatch.length;
-    }
-
-    // Add remaining text after the last match
-    if (lastIndex < text.length) {
-      parsedText.push(text.slice(lastIndex));
-    }
-
-    // Handle other URLs not in markdown links
-    const urlPattern = /(https?:\/\/[^\s]+)/g;
-    return parsedText.map((part, index) => {
-      if (typeof part === 'string') {
-        return part.split(urlPattern).map((subPart, subIndex) => {
-          if (urlPattern.test(subPart)) {
-            if (isImageUrl(subPart)) {
-              return <img key={subIndex} src={subPart} alt="Image" style={{ maxWidth: '100%', margin: '0.5em 0' }} />;
-            }
-            return (
-              <a key={subIndex} href={subPart} target="_blank" rel="noopener noreferrer">
-                {subPart}
-              </a>
-            );
-          }
-          return subPart;
-        });
-      }
-      return part;
+    // Replace markdown links
+    text = text.replace(markdownLinkPattern, (match, linkText, linkUrl) => {
+      return isImageUrl(linkUrl) ? `<img src="${linkUrl}" alt="${linkText}" style="max-width: 100%; margin: 0.5em 0;" />` : `<a href="${linkUrl}" target="_blank" rel="noopener noreferrer">${linkText}</a>`;
     });
+
+    // Replace strong tags
+    text = text.replace(strongTagPattern, '<strong>$1</strong>');
+
+    // Handle line breaks
+    text = text.replace(/<br>/g, '\n');
+
+    return parse(text);
   };
 
   return (

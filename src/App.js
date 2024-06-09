@@ -244,6 +244,10 @@ const ChatInput = styled.input`
   }
 `;
 
+const isImageUrl = (url) => {
+  return /\.(jpeg|jpg|gif|png|webp)(\?.*)?$/.test(url) || /(format=webp)/.test(url);
+};
+
 const App = () => {
   const [conversation, setConversation] = useState([
     { text: "Hej, hvad kan jeg hjælpe dig med?", isUser: false }
@@ -298,7 +302,6 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-
     socket.current = socketIOClient(SOCKET_SERVER_URL || placeholderSOCKET_SERVER_URL);
 
     socket.current.on('connect', () => {
@@ -408,18 +411,6 @@ const App = () => {
     }).join('<br>'); // Joins lines back with line breaks for HTML
   };
 
-  // Function to replace image URLs with img tags
-  const replaceImageUrlsWithImgTags = (text) => {
-    const urlRegex = /(https?:\/\/[^\s]+\.(?:png|jpg|jpeg|gif|webp))/g;
-    return text.replace(urlRegex, '<img src="$1" alt="Image" style="max-width:100%; height:auto;" />');
-  };
-
-  // Function to replace remaining URLs with anchor tags
-  const replaceUrlsWithLinks = (text) => {
-    const urlRegex = /((https?:\/\/[^\s]+))/g;
-    return text.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
-  };
-
   const resetChat = () => {
     // Optionally: Disconnect existing socket connection
     socket.current.disconnect();
@@ -444,6 +435,62 @@ const App = () => {
   function closeChat() {
     window.parent.postMessage({ action: 'closeChat' }, pagePath); // Make sure this matches the actual parent domain
   }
+
+  const renderMessageContent = (text) => {
+    // Handle markdown links
+    const markdownLinkPattern = /\[([^\]]+)\]\(([^)]+)\)/g;
+    let parsedText = [];
+    let match;
+    let lastIndex = 0;
+
+    while ((match = markdownLinkPattern.exec(text)) !== null) {
+      const [fullMatch, linkText, linkUrl] = match;
+
+      // Add text before the match
+      if (match.index > lastIndex) {
+        parsedText.push(text.slice(lastIndex, match.index));
+      }
+
+      // Check if the link is an image
+      if (isImageUrl(linkUrl)) {
+        parsedText.push(<img key={linkUrl} src={linkUrl} alt={linkText} style={{ maxWidth: '100%', margin: '0.5em 0' }} />);
+      } else {
+        parsedText.push(
+          <a key={linkUrl} href={linkUrl} target="_blank" rel="noopener noreferrer">
+            {linkText}
+          </a>
+        );
+      }
+
+      lastIndex = match.index + fullMatch.length;
+    }
+
+    // Add remaining text after the last match
+    if (lastIndex < text.length) {
+      parsedText.push(text.slice(lastIndex));
+    }
+
+    // Handle other URLs not in markdown links
+    const urlPattern = /(https?:\/\/[^\s]+)/g;
+    return parsedText.map((part, index) => {
+      if (typeof part === 'string') {
+        return part.split(urlPattern).map((subPart, subIndex) => {
+          if (urlPattern.test(subPart)) {
+            if (isImageUrl(subPart)) {
+              return <img key={subIndex} src={subPart} alt="Image" style={{ maxWidth: '100%', margin: '0.5em 0' }} />;
+            }
+            return (
+              <a key={subIndex} href={subPart} target="_blank" rel="noopener noreferrer">
+                {subPart}
+              </a>
+            );
+          }
+          return subPart;
+        });
+      }
+      return part;
+    });
+  };
 
   return (
     <>
@@ -470,22 +517,20 @@ const App = () => {
             <HeaderSubtitle>{headerSubtitleG || "Vores virtuelle assistent er her for at hjælpe dig."}</HeaderSubtitle>
           </Header>
           {conversation.map((entry, index) => {
-            let formattedText = entry.text
+            const formattedText = entry.text
               .replace(/\n- /g, "\n\u2022 ") // Bullet points
               .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"); // Bold text
 
-            formattedText = parseMarkdownHeaders(formattedText); // Fixed function call
-            formattedText = replaceImageUrlsWithImgTags(formattedText); // Replace image URLs with img tags
-            formattedText = replaceUrlsWithLinks(formattedText); // Replace remaining URLs with links
+            const textWithHeaders = parseMarkdownHeaders(formattedText); // Fixed function call
 
-            // In MessageContainer, you can check for user vs. AI messages and apply appropriate styling
             const isUser = entry.isUser;
             const messageClasses = isUser ? "userMessage" : "aiMessage"; // Differentiate styles
+
             return (
               <MessageContainer key={index} $isUser={isUser}>
                 {!isUser && <MessageLogo src={headerLogoG || DIlogo} alt="AI Logo" />}
                 <Message $isUser={isUser} themeColor={themeColor || '#5083e3'}>
-                  <div className={messageClasses}>{parse(formattedText)}</div>
+                  <div className={messageClasses}>{renderMessageContent(textWithHeaders)}</div>
                 </Message>
               </MessageContainer>
             );

@@ -249,15 +249,8 @@ const isImageUrl = (url) => {
 };
 
 const App = () => {
-  const [conversation, setConversation] = useState([
-    { text: startMessage||"Hej, hvad kan jeg hjælpe dig med?", isUser: false }
-  ]);
-  const [conversationHis, setConversationHis] = useState([
-    {
-      "content": startMessage||"Hej, hvad kan jeg hjælpe dig med?",
-      "role": "apiMessage"
-    }
-  ]);
+  const [conversation, setConversation] = useState([]);
+  const [conversationHis, setConversationHis] = useState([]);
   const [message, setMessage] = useState('');
   const [socketIOClientId, setSocketIOClientId] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -290,7 +283,7 @@ const App = () => {
         setHeaderSubtitleG(event.data.headerSubtitleG);
         setTitleG(event.data.titleG);
         setSocketServerUrl(event.data.SOCKET_SERVER_URL);
-        setStartMessage(event.data.StartMessage);
+        setStartMessage(event.data.startMessage);
       }
     };
 
@@ -302,6 +295,12 @@ const App = () => {
       window.removeEventListener('message', handleMessage);
     };
   }, []);
+
+  useEffect(() => {
+    const initialMessage = startMessage || "Hej, hvad kan jeg hjælpe dig med?";
+    setConversation([{ text: initialMessage, isUser: false }]);
+    setConversationHis([{ content: initialMessage, role: "apiMessage" }]);
+  }, [startMessage]);
 
   useEffect(() => {
     socket.current = socketIOClient(SOCKET_SERVER_URL || placeholderSOCKET_SERVER_URL);
@@ -418,11 +417,9 @@ const App = () => {
     socket.current.disconnect();
 
     // Reset conversation
-    setConversation([{ text: startMessage||"Hej, hvad kan jeg hjælpe dig med?", isUser: false }]);
-    setConversationHis([{
-      "content": startMessage||"Hej, hvad kan jeg hjælpe dig med?",
-      "role": "apiMessage"
-    }]);
+    const initialMessage = startMessage || "Hej, hvad kan jeg hjælpe dig med?";
+    setConversation([{ text: initialMessage, isUser: false }]);
+    setConversationHis([{ content: initialMessage, role: "apiMessage" }]);
 
     // Reset other relevant states (e.g., message, isLoading)
     setMessage('');
@@ -438,7 +435,7 @@ const App = () => {
     window.parent.postMessage({ action: 'closeChat' }, pagePath); // Make sure this matches the actual parent domain
   }
 
-    // Get the current date
+  // Get the current date
   const currentDate = new Date();
 
   // Format the date as desired

@@ -365,7 +365,7 @@ const App = () => {
           "Content-Type": "application/json",
           "Authorization": "Bearer wEfLmtcJ4Mj2DODkFDWq2ggjjJ6gJ125sJJpfMR/Aeg=", // Ensure this is secure
         },
-        body: JSON.stringify({ question: "dato: " + formattedDate + "\n" + message, "history": conversationHis, socketIOClientId }),
+        body: JSON.stringify({ question: /*"dato: " + formattedDate + "\n" + */message, "history": conversationHis, socketIOClientId }),
       });
 
       if (response.ok) {

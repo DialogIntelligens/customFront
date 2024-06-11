@@ -250,11 +250,11 @@ const isImageUrl = (url) => {
 
 const App = () => {
   const [conversation, setConversation] = useState([
-    { text: "Hej, hvad kan jeg hjælpe dig med?", isUser: false }
+    { text: startMessage||"Hej, hvad kan jeg hjælpe dig med?", isUser: false }
   ]);
   const [conversationHis, setConversationHis] = useState([
     {
-      "content": "Hej, hvad kan jeg hjælpe dig med?",
+      "content": startMessage||"Hej, hvad kan jeg hjælpe dig med?",
       "role": "apiMessage"
     }
   ]);
@@ -274,6 +274,7 @@ const App = () => {
   const [headerSubtitleG, setHeaderSubtitleG] = useState('');
   const [titleG, setTitleG] = useState('');
   const [SOCKET_SERVER_URL, setSocketServerUrl] = useState('');
+  const [startMessage, setStartMessage] = useState('');
 
   useEffect(() => {
     const handleMessage = (event) => {
@@ -289,6 +290,7 @@ const App = () => {
         setHeaderSubtitleG(event.data.headerSubtitleG);
         setTitleG(event.data.titleG);
         setSocketServerUrl(event.data.SOCKET_SERVER_URL);
+        setStartMessage(event.data.StartMessage);
       }
     };
 
@@ -416,9 +418,9 @@ const App = () => {
     socket.current.disconnect();
 
     // Reset conversation
-    setConversation([{ text: "Hej, hvad kan jeg hjælpe dig med?", isUser: false }]);
+    setConversation([{ text: startMessage||"Hej, hvad kan jeg hjælpe dig med?", isUser: false }]);
     setConversationHis([{
-      "content": "Hej, hvad kan jeg hjælpe dig med?",
+      "content": startMessage||"Hej, hvad kan jeg hjælpe dig med?",
       "role": "apiMessage"
     }]);
 
